@@ -2,6 +2,10 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+void infoUsuario(struct passwd *pw, int lang);
+void infoGrupo(struct group *gr, int lang);
 
 int main (int argc, char **argv)
 {
@@ -19,28 +23,28 @@ int main (int argc, char **argv)
     {
         switch (c)
         {
-        // Da ID de usuario
-        case 'u':
+        case 'u': // Da ID de usuario
             uValue = atoi(optarg);
             break;
-        // Da nombre de usuario
-        case 'n':
+
+        case 'n': // Da nombre de usuario
             nValue = optarg;
             break;
-        // Da ID o nombre del grupo
-        case 'g':
+
+        case 'g': // Da ID o nombre del grupo
             // !!!
             // Puede introducir cadena o entero revisar codigo de esta opción
             gValue = optarg;
             break;
-        // Fija idioma a inglés
-        case 'e':
+
+        case 'e': // Fija idioma a inglés
             langEng = 1;
             break;
-        // Fija idioma a español
-        case 's':
+
+        case 's': // Fija idioma a español
             langEsp = 1;
             break;
+
         case '?':
             if (optopt == 'u' || optopt == 'n')
                 fprintf (stderr, "La opción %c requiere un argumento.\n", optopt);
@@ -49,66 +53,102 @@ int main (int argc, char **argv)
             else
                 fprintf (stderr, "Caracter `\\x%x'.\n", optopt);
             return 1;
+
         default:
             abort ();
         }
     }
 
+    // Comprueba si hay conflicto con la identificación del usuario
     if (nValue && uValue) {
         fprintf(stderr, "No se pueden usar las opciones 'n' y 'u' a la vez\n");
-        
+
     }
+
+    // Comprueba si hay conflicto en las flag de idioma
     if (langEng && langEsp) {
         fprintf(stderr, "No se pueden usar las opciones 'e' y 's' a la vez\n");
         langEng = 0;
         langEsp = 0;
-    }
-    
-    // Detecta idioma si no hay ninguno fijado
+    // Detecta idioma del sistema si no hay ninguno fijado
     if (!(langEsp || langEng)) {
         char lang[32];
         lang = getenv("LANG");
-        if (strstr(lang, "ES")
+        if (strstr(lang, "ES"))
             langEsp = 1;
         else
-            langEng = 1;
+            langEng = 1; // Idioma por defecto
     }
-    
-    
+
+
     // Se imprime la información del usuario, en caso de no pasarse por
     // parametro se usa variable de entorno USER
+    struct passwd *pw;
     if (uValue)
-        infoUsuarioId(uValue, langEsp);
-        // Funcion sin implementar
+        pw = (struct passwd*)getpwuid(uValue);
     else if (nValue)
-        infoUsuarioNombre(nValue, langEsp);
-        // Funcion sin implementar
+        pw = (struct passwd*)getpwnam(nValue);
     else
-        infoUsuarioNombre(getenv("USER"), langEsp);
+        pw = (struct passwd*)getpwnam(getenv("USER"));
+
+    infoUsuario(pw, langEsp); // Imprime información de usuario
+
+
+    // En caso de haber proporcionado un identificador para grupo
+    // se comprueba si ha sido el ID o el nombre
+    if (gValue) {
+        int gid;
+        struct group * gr;
+        if ((gid = atoi(gValue)) == 0) {
+            gr = (struct group*)getgrnam(gValue);
+        } else {
+            gr = (struct group*)getgrgid(gid);
+        }
+        infoGrupo(gr, langEsp);
+    }
 
     return 0;
 }
 
-void infoUsuarioId(int id, int lang) {
-    struct passwd *pw;
-    pw = getpwuid(uValue);
-    printf("Nombre: %s\n", pw->pw_gecos);
-    printf("Password: %s\n", pw->pw_passwd);
-    printf("UID: %d\n", pw->pw_uid);
-    printf("Home: %s\n", pw->pw_dir);
-    printf("Número de grupo principal: %d\n", pw->pw_gid);
+void infoUsuario(struct passwd *pw, int lang) {
+
+    if (lang == 0) { // Idioma ingles
+        printf("Name: %s\n", pw->pw_gecos);
+        printf("Password: %s\n", pw->pw_passwd);
+        printf("UID: %d\n", pw->pw_uid);
+        printf("Home: %s\n", pw->pw_dir);
+        printf("Main Group Name: %d\n", pw->pw_gid);
+    } else if (lang == 1) { // Idioma español
+        printf("Nombre: %s\n", pw->pw_gecos);
+        printf("Contraseña: %s\n", pw->pw_passwd);
+        printf("UID: %d\n", pw->pw_uid);
+        printf("Carpeta inicio: %s\n", pw->pw_dir);
+        printf("Número de grupo principal: %d\n", pw->pw_gid);
+    } else {
+        printf("Error código idioma al imprimir datos usuario\n");
+    }
 }
 
-void infoUsuarioId(int id, int lang) {
-    struct passwd *pw;
-    pw = getpwuid(uValue);
-    printf("Nombre: %s\n", pw->pw_gecos);
-    printf("Password: %s\n", pw->pw_passwd);
-    printf("UID: %d\n", pw->pw_uid);
-    printf("Home: %s\n", pw->pw_dir);
-    printf("Número de grupo principal: %d\n", pw->pw_gid);
+void infoGrupo(struct group *gr, int lang) {
+    int i;
+    if (lang == 0) {
+        printf("Group Information\n==============\n");
+        printf("\tName: %s\n", gr->gr_name);
+        printf("\tGID: %s\n", gr-> gr_gid);
+        printf("\tGroup Members:\n");
+        while (gr->gr_mem[i] != NULL)
+            printf("\t\t-%s\n",gr->gr_mem[i]);
+    } else if (lang == 1) {
+        printf("Información de grupo\n==============\n");
+        printf("\tNombre: %s\n", gr->gr_name);
+        printf("\tGID: %s\n", gr-> gr_gid);
+        printf("\tMiembros del grupo:\n");
+        while (gr->gr_mem[i] != NULL)
+            printf("\t-%s\n",gr->gr_mem[i]);
+    } else {
+        printf("Error código de idioma al imprimir datos de grupo\n");
+    }
 }
-
 
 
 
