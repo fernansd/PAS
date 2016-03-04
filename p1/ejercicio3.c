@@ -26,6 +26,10 @@ int main() {
 	int i;
     // Semilla para números aleatorios
     srand(time(NULL));
+    // Fichero de log
+    FILE * fichero;
+    // Buffer para logs
+    char log_buf[120];
 	
 	// Creamos la tubería
 	status = pipe(fildes);
@@ -53,6 +57,12 @@ int main() {
 			    
 			    bytes_leidos = read(fildes[0], buffer, MAX_SIZE);
 			    
+			    sprintf(log_buf,"[HIJO]: leemos el número aleatorio %s de la"
+			        " tubería\n", buffer);
+			    fichero = fopen("./ejercicio3.txt","w+");
+			    fputs(log_buf, fichero);
+			    fclose(fichero);
+			    
 			    //Leemos mensaje
 			    printf("[HIJO]: leemos el número aleatorio %s de la tubería\n",
 			        buffer);
@@ -78,8 +88,14 @@ int main() {
 			    numeroAleatorio = rand()%5000;			
 			    sprintf(buffer,"%d",numeroAleatorio);
 			    
-			    printf("[PADRE]: escribimos el número aleatorio %s en la tubería\n",
-			        buffer);
+			    // Escribimos al fichero log
+			    sprintf(log_buf,"[PADRE]: escribimos el número aleatorio %s en"
+			        " la tubería\n", buffer);
+			    fichero = fopen("./ejercicio3.txt","w+");
+			    fputs(log_buf, fichero);
+			    fclose(fichero);
+			    
+			    printf(log_buf);
 			        
 			    write(fildes[1], buffer, MAX_SIZE);
 			    
