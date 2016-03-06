@@ -48,12 +48,13 @@ int main (int argc, char **argv)
             break;
 
         case '?':
-            if (optopt == 'u' || optopt == 'n')
+            if (optopt == 'u' || optopt == 'n') {
                 fprintf (stderr, "La opción %c requiere un argumento.\n", optopt);
-            else if (isprint (optopt))
+            } else if (isprint (optopt)) {
                 fprintf (stderr, "Opción desconocida '-%c'.\n", optopt);
-            else
+            } else {
                 fprintf (stderr, "Caracter `\\x%x'.\n", optopt);
+            }
             return 1;
 
         default:
@@ -72,6 +73,7 @@ int main (int argc, char **argv)
         fprintf(stderr, "No se pueden usar las opciones 'e' y 's' a la vez\n");
         langEng = 0;
         langEsp = 0;
+    }
     // Detecta idioma del sistema si no hay ninguno fijado
     if (!(langEsp || langEng)) {
         char *lang;
@@ -113,6 +115,7 @@ int main (int argc, char **argv)
 
     return 0;
 }
+
 
 void infoUsuario(struct passwd *pw, int lang) {
 
