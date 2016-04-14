@@ -16,7 +16,6 @@ int main (int argc, char **argv)
         langEng = 0;
     char *nValue = NULL,
          *gValue = NULL;
-    int index;
     int c;
 
     opterr = 0;
@@ -136,19 +135,20 @@ void infoUsuario(struct passwd *pw, int lang) {
     }
 }
 
+// Recibe como idioma la variable langEsp
 void infoGrupo(struct group *gr, int lang) {
-    int i;
+    int i=0;
     if (lang == 0) {
         printf("Group Information\n==============\n");
         printf("\tName: %s\n", gr->gr_name);
-        printf("\tGID: %s\n", gr-> gr_gid);
+        printf("\tGID: %d\n", gr-> gr_gid);
         printf("\tGroup Members:\n");
         while (gr->gr_mem[i] != NULL)
             printf("\t\t-%s\n",gr->gr_mem[i]);
     } else if (lang == 1) {
         printf("Información de grupo\n==============\n");
         printf("\tNombre: %s\n", gr->gr_name);
-        printf("\tGID: %s\n", gr-> gr_gid);
+        printf("\tGID: %d\n", gr-> gr_gid);
         printf("\tMiembros del grupo:\n");
         while (gr->gr_mem[i] != NULL)
             printf("\t-%s\n",gr->gr_mem[i]);
