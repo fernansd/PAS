@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pwd.h>
+#include <grp.h>
 
 void infoUsuario(struct passwd *pw, int lang);
 void infoGrupo(struct group *gr, int lang);
@@ -46,12 +48,13 @@ int main (int argc, char **argv)
             break;
 
         case '?':
-            if (optopt == 'u' || optopt == 'n')
+            if (optopt == 'u' || optopt == 'n') {
                 fprintf (stderr, "La opción %c requiere un argumento.\n", optopt);
-            else if (isprint (optopt))
+            } else if (isprint (optopt)) {
                 fprintf (stderr, "Opción desconocida '-%c'.\n", optopt);
-            else
+            } else {
                 fprintf (stderr, "Caracter `\\x%x'.\n", optopt);
+            }
             return 1;
 
         default:
@@ -70,26 +73,29 @@ int main (int argc, char **argv)
         fprintf(stderr, "No se pueden usar las opciones 'e' y 's' a la vez\n");
         langEng = 0;
         langEsp = 0;
+    }
     // Detecta idioma del sistema si no hay ninguno fijado
     if (!(langEsp || langEng)) {
-        char lang[32];
+        char *lang;
         lang = getenv("LANG");
-        if (strstr(lang, "ES"))
+        if (strstr(lang, "ES")) {
             langEsp = 1;
-        else
+        } else {
             langEng = 1; // Idioma por defecto
+        }
     }
 
 
     // Se imprime la información del usuario, en caso de no pasarse por
     // parametro se usa variable de entorno USER
     struct passwd *pw;
-    if (uValue)
+    if (uValue) {
         pw = (struct passwd*)getpwuid(uValue);
-    else if (nValue)
+    } else if (nValue) {
         pw = (struct passwd*)getpwnam(nValue);
-    else
+    } else {
         pw = (struct passwd*)getpwnam(getenv("USER"));
+    }
 
     infoUsuario(pw, langEsp); // Imprime información de usuario
 
@@ -109,6 +115,7 @@ int main (int argc, char **argv)
 
     return 0;
 }
+
 
 void infoUsuario(struct passwd *pw, int lang) {
 
