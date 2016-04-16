@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/bash 
+
 if [ $# -eq 0 ]
 then
 	echo "Error de llamada. Usar el script $0 <directorio> <numero bytes>"
@@ -14,12 +15,12 @@ fi
 # Cuando no se pasa el número de bytes
 if [ $# -eq 1 ]
 then
-	contenido=$(find $(pwd $1))
+	contenido=$(find $(pwd $1)\/$1)
 fi
 
 if [ $# -eq 2 ]
 then
-    contenido=$(find $(pwd $1) -size +"$2"c)
+    contenido=$(find $(pwd $1)\/$1 -size +"$2"c)
 fi
 
 for x in $contenido
