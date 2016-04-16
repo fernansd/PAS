@@ -1,14 +1,16 @@
 #!/bin/bash
-if [ $# -ne 1 ]
+
+if [ ! $# -eq 1 ];
 then
-	echo "No se ha pasado nombre de archivo"
+	echo "El uso del programa es $0 nombreFichero"
+	exit 1
+fi
+if [ -f "$1" ];
+then
+	fecha="$(date +%d-%m-%y)"
+	cp "$1" "$1.bak_$fecha"
+else
+	echo "El fichero no existe"
 	exit 1
 fi
 
-if [ -f "$1" ]
-then
-	cp "$1" "$1.bak_$(date +%d-%m-%y)"
-else
-	echo "El argumento no es un fichero"
-	exit 1
-fi

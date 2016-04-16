@@ -1,8 +1,10 @@
 #!/bin/bash
-read -p "Introduce nombre de usuario: " nombre
-if [ "$nombre" == $USER ]
+
+echo -n "Introduzca su nombre de usuario: "; read usuario
+
+if [ "$usuario" == "$USER" ]
 then
-	echo "Bievenido $USER "
+	echo "Bienvenido $USER"
 else
-	echo "Eso es mentira"
+	echo "Eso es mentira!"
 fi
