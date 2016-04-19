@@ -36,6 +36,7 @@ for dir in pequenos medianos grandes
 do
     if [ -e $dir ]
     then
+        echo "$dir:"
         rm -Ir $dir\/
     fi
     
@@ -48,21 +49,21 @@ done
 # enlaces simbólicos según las propiedades del archivo al que apuntan.
 # La parte *! -type d* sirve para ignorar los directorios.
 #
-echo -e "\nMoviendo archivos pequeños\n"
+echo -e "\nMoviendo archivos pequeños:"
 for archivo in $(find -L . ! -type d -size -"$umbral1"c)
 do
     cp $archivo ./pequenos
     echo $archivo
 done
 
-echo -e "\nMoviendo archivos medianos\n"
+echo -e "\nMoviendo archivos medianos:"
 for archivo in $(find -L . ! -type d -size +"$umbral1"c -size -"$umbral2"c)
 do
     cp $archivo ./medianos
     echo $archivo
 done
 
-echo -e "\nMoviendo archivos grandes\n"
+echo -e "\nMoviendo archivos grandes:"
 for archivo in $(find -L . ! -type d -size +"$umbral2"c)
 do
     cp $archivo ./grandes
