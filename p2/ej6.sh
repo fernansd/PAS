@@ -9,8 +9,9 @@ tiempo_inicio=$(date +%s.%3N)
 if [ $# -eq 0 ]
 then
 	echo "Se tomará la carpeta actual como directorio de trabajo:"
-	dir=$PWD
-	echo $dir
+	dirs=$PWD
+	echo $dirs
+	dir_num=1
 else
     # Controla que todos los path pasados sean directorios
     for path in $*
@@ -20,8 +21,9 @@ else
             echo "Error. $path no es un directorio"
             exit 1
         fi
+        (( dir_num++ ))
     done
-    dir=$*
+    dirs=$*
 fi
 
 
@@ -35,14 +37,18 @@ mover_protegido () {
     if [ -e $destino ]
     then
         read -e -n1 -p "El fichero $destino existe. ¿Desea sobreescribirlo? (s/n): " opt
-        case opt in
+        case $opt in
             s)
                 cp $origen $destino
+                echo 1 # return
+                ;;
             n)
-                echo "Copia abortada para $destino"
+                echo 0 # return
+                ;;
         esac
     else
         cp $origen $destino
+        echo 1 # return
     fi
 }
 
@@ -94,31 +100,54 @@ echo "$h_dir" para ficheros de cabecera
 #
 # Búsqueda y copia de ficheros
 #
-for archivo in $(find $dir -executable -type f)
+echo "Procesando archivos..."
+
+for archivo in $(find $dirs -executable -type f)
 do
-    mover_protegido $archivo $exe_dir
+    exito=$(mover_protegido $archivo $exe_dir)
+    if [ $exito -eq 1 ]
+    then
+        (( exe_num++ ))
+    fi
 done
 
-for archivo in $(find $dir -type f)
+for archivo in $(find $dirs -type f)
 do
     libreria=$(basename $archivo | grep "^lib*")
     if ! [ -z $libreria ]
     then
-        mover_protegido $libreria $lib_dir
+        exito=$(mover_protegido $archivo $lib_dir)
+        if [ $exito -eq 1 ]
+        then
+            (( lib_num++ ))
+        fi
     fi
 done
 
-for archivo in $(find $dir \( -path *.png -o -path *.jpg -o -path *.gif \))
+for archivo in $(find $dirs \( -name '*.png' -o -name '*.gif' -o -name '*.jpg' \))
 do
-    pdf=$(echo $archivo | sed 's/\(.*\.\)jpg/\1pdf/')
+    pdf=$(echo $archivo | sed -r 's/\(.*\.\)(png|jpg|gif)/\1pdf/')
     convert $archivo $pdf
-    mover_protegido $pdf $img_dir
+    exito=$(mover_protegido $archivo $img_dir)
+    if [ $exito -eq 1 ]
+    then
+        (( img_num++ ))
+    fi
+    exito=$(mover_protegido $pdf $img_dir)
+    if [ $exito -eq 1 ]
+    then
+        (( img_num++ ))
+    fi
 
 done
 
-for archivo in $(find $dir -path *.h ! -type d)
+for archivo in $(find $dirs -path *.h ! -type d)
 do
-    mover_protegido $archivo $h_dir
+    exito=$(mover_protegido $archivo $h_dir)
+    if [ $exito -eq 1 ]
+    then
+        (( h_num++ ))
+    fi
 done
 
 # Tiempo de finalización del script
@@ -128,7 +157,11 @@ tiempo_fin=$(date +%s.%3N)
 #
 # Estadísticas del script
 #
-echo "Número de directorios procesados: $#"
+echo "Número de directorios procesados: $dir_num"
+echo "Número de ficheros ejecutables: $exe_num"
+echo "Número de librerías: $lib_num"
+echo "Número de imágenes: $img_num"
+echo "Número de ficheros de cabecera: $h_num"
 echo "Tiempo necesario: $(echo "${tiempo_fin}-${tiempo_inicio}" | bc)"
 
 
