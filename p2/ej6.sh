@@ -126,7 +126,7 @@ done
 
 for archivo in $(find $dirs \( -name '*.png' -o -name '*.gif' -o -name '*.jpg' \))
 do
-    pdf=$(echo $archivo | sed -r 's/\(.*\.\)(png|jpg|gif)/\1pdf/')
+    pdf=$(echo $archivo | sed -r 's/(.*\.)(png|jpg|gif)/\1pdf/')
     convert $archivo $pdf
     exito=$(mover_protegido $archivo $img_dir)
     if [ $exito -eq 1 ]
