@@ -21,6 +21,11 @@ fi
 
 archivo=$1
 
+
+#
+# SALIDA POR PANTALLA
+#
+
 # 1. Mostrar títulos de las series
 echo -e "\n1) Títulos de series:"
 grep -E '[0-9]+\. ' $archivo
@@ -37,12 +42,12 @@ grep -E '^\*.+\*' $archivo | sed -nr 's/\* +(.+) +\*/\1/p'
 echo "****************"
 
 # 4. Imprimir fichero sin líneas de sinopsis
-echo -e "\n4) Fichero sin sinopsis"
+echo -e "\n4) Fichero sin sinopsis:"
 sed -r '/^SINOPSIS.+$/d' $archivo
 echo "****************"
 
 # 5. Eliminar líneas vacías
-echo -e "\n5) Fichero sin líneas vacías"
+echo -e "\n5) Fichero sin líneas vacías:"
 sed -r '/^$/d' $archivo
 echo "****************"
 
@@ -55,10 +60,24 @@ done
 echo "****************"
 
 # 7. Mostrar líneas con mayúsculas entre paréntesis
-echo -e "\n7) Líneas con máyusculas entre paréntesis"
+echo -e "\n7) Líneas con máyusculas entre paréntesis:"
 grep -E '\(.*[A-Z].+\)' $archivo
 echo "****************"
 
 # 8. Emparejamientos de palabras repetidas en la misma línea:
-echo -e "\n8) Palabras repetidas en la misma línea"
+echo -e "\n8) Palabras repetidas en la misma línea:"
+grep -o -E ' ([[:alpha:]]+) .* \1 ' $archivo
+echo "****************"
 
+# 9. Líneas que contengan al menos 28 letras a
+echo -e "\n9) Líneas con 28 o más letras a:"
+grep -E '([aA].*){28,}' $archivo
+echo "****************"
+
+# 10. Nombre de la serie y número de temporadas con formato concreto
+echo -e "\n10) Nombre de serie y temporadas:"
+grep -A 2 -E '[0-9]+\. ' $archivo
+
+
+# Restaura los separadores de array a su valor por defecto
+IFS=$OLDIFS
