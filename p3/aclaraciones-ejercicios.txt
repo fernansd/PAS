@@ -1,0 +1,33 @@
+# 6. Usar comando uniq Ej: echo -e "1\n2\n3\n1\n3" | sort | uniq
+
+# 8. opcion grep -o
+
+# 10. opcion grep -C añade n líneas antes y después
+
+# restaura el separador en los array
+IFS=$OLDIFS
+
+##### ej2
+
+# Poner modo no silencioso y encadenar varios sed para hacer las sustituciones
+
+
+##### ej3
+
+# wc -c devuelve longitud de cadena hacer un echo ordenar y quiatar nº con sed
+
+# 3. ps aux 
+# sed falla capturando más de 10 elementos
+
+
+##### ej4
+
+# recorrer fichero en for e ir volcando en fichero de salida
+# también es posible con sed, pero es más difícil
+
+
+##### ej5
+
+# en hilos contar nº núcleos
+# 
+
