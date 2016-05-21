@@ -200,7 +200,8 @@ de configuración correspondientes a esta opción se encuentran en torno a la
 línea *315*.
 
 ### Ej13
-Para crear un host virtual
+Para crear un host virtual que dependa de la dirección con la que el cliente
+accede basta con añadir al fichero de configuración el siguiente contenido:
 
     <VirtualHost *:8080>
         DocumentRoot "/home/i42sadef/httpd-docs/"
@@ -219,3 +220,8 @@ Para crear un host virtual
         CustomLog "logs/ip-access.log" common
 
     </VirtualHost>
+
+al lado de *VirtualHost* ponemos `*:8080` para asegurarnos de que siguen
+escuchando en el puerto 8080. A continuación ponemos la nueva ruta para la
+raíz de cada una de las direcciones y ponemos el nombre del servidor que
+queremos que tenga.
