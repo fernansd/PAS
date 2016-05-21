@@ -1,6 +1,7 @@
+*Autor: Fernando Sánchez Delgado*
+
 Memoria Práctica 4: Apache
 ==========================
-
 
 1. Introducción (ej 1-3)
 ------------------------
@@ -72,16 +73,17 @@ se intenta acceder a este directorio.
 También se puede mejorar el aspecto visual de los índices descomentando la
 línea *455*: `Include conf/extra/httpd-autoindex.conf`.
 
-!["Aspecto mejorados del índice autogenerado"](img/mejora-index-midirectorio.png)
+!["Aspecto mejorado del índice autogenerado"](img/mejora-index-midirectorio.png)
 
 
 3. Conexión al servidor (ej7-10)
 --------------------------------
 ### Ej7
 Cuando iniciamos apache nos devuelve un mensaje con el siguiente contenido:
+
 > AH00558: httpd: Could not reliably determine the server's fully qualified
- domain name, using 172.16.218.12. Set the 'ServerName' directive globally to
-  suppress this message
+> domain name, using 172.16.218.12. Set the 'ServerName' directive globally to
+> suppress this message
 
 Esto hace referencia a que no hemos puesto el nombre del servidor, y por lo
 tanto tomará como valor por defecto la dirección IP. Para evitar que salga
@@ -266,10 +268,10 @@ que pueda hacer efecto la configuración del archivo *.htaccess*.
 ### Ej16
 Para controlar el rango de direcciones que acceden al servidor web, vamos a la
 parte de *httpd.conf* donde se configura el directorio raíz, y añadimos dentro
-de la directiva `<Diretctory>` asociada:
+de la directiva `<Directory>` asociada:
 
-  Allow from <ip-maquina>/24
-  Order Allow,Deny
+    Order Allow,Deny    
+    Allow from <ip-maquina>/24
 
 De esta forma esta restrigiendo el acceso a todas los clientes que no pertenezcan
 a la misma subred que el servidor. La directiva `Order` fija el orden en que
