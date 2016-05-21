@@ -3,7 +3,7 @@ Memoria Práctica 4: Apache
 
 
 1. Introducción (ej 1-3)
-----------------------
+------------------------
 Tras ejecutar el script de instalación, hay que añadir al $PATH el directorio
 con los ejecutables de Apache, o ir a la carpeta y ejecutar directamente el
 archivo.
@@ -20,7 +20,7 @@ pasándole el argumento *start*: *./apachectl start*. A continuación, accedemos
 en el navegador a la dirección **localhost:8080**. Debe salir el mensaje:
 *"It works!"*.
 
-![pagina-prueba-apache](img/it-works.jpg)
+!["Página que aparece al iniciar Apache por primera vez"](img/it-works.jpg)
 
 2. Directorio de archivos (ej 4-6)
 ----------------------------------
@@ -56,7 +56,7 @@ de prueba con el comando `touch test{01..15}.txt`. A continuación accedemos
 a la ruta **localhost:8080/midirectorio**. Y debe aparecer un listado de todos
 los ficheros.
 
-![index-midirectorio](img/index-midirectorio.png)
+!["Índice generado por Apache del directorio /midirectorio"](img/index-midirectorio.png)
 
 Si queremos evitar que se puedan listar los directorios basta con eliminar la
 opción *Indexes* mencionada antes. Aunque si lo que queremos es que algún
@@ -72,7 +72,7 @@ se intenta acceder a este directorio.
 También se puede mejorar el aspecto visual de los índices descomentando la
 línea *455*: `Include conf/extra/httpd-autoindex.conf`.
 
-![mejora-index-midirectorio](img/mejora-index-midirectorio.png)
+!["Aspecto mejorados del índice autogenerado"](img/mejora-index-midirectorio.png)
 
 
 3. Conexión al servidor (ej7-10)
@@ -221,7 +221,64 @@ accede basta con añadir al fichero de configuración el siguiente contenido:
 
     </VirtualHost>
 
-al lado de *VirtualHost* ponemos `*:8080` para asegurarnos de que siguen
+Al lado de *VirtualHost* ponemos `*:8080` para asegurarnos de que siguen
 escuchando en el puerto 8080. A continuación ponemos la nueva ruta para la
 raíz de cada una de las direcciones y ponemos el nombre del servidor que
-queremos que tenga.
+queremos que tenga. Para personalizar los log a cada uno de los *virtual host*
+basta con añadir en cada uno las líneas *ErrorLog* y *CustomLog*. Para probar
+si ha funcionado solo basta acceder tras reiniciar Apache a las direcciones
+de cada *virtual host* para comprobar que los cambios han surgido efecto.
+
+### Ej14
+Para que Apache muestre la documentación, en la ruta por defecto `/manual`,
+es necesario descomentar la línea `Include conf/extra/httpd-manual.conf` en
+torno a la línea *494*. A continuación abrimos el archivo de configuración
+`httpd/conf/extra/httpd-manual.conf` y observamos los módulos situados en el
+comentario de la cabecera bajo *Required modules*. Ahora hay que asegurarse
+de que estos módulos están incluidos para eso buscamos en *httpd.conf* los
+módulos y descomentamos su línea si aún no lo está. En nuestro caso parece
+que sólo el módulo `mod_negotiation` no está incluido. Tras esto ya podemos
+acceder a la dirección `/manual` para acceder a la documentación de Apache.
+
+### Ej15
+Para controlar recursos restringidos mediante los medios que incluye Apache
+debemos crear un archivo *.htaccess* en la raíz del directorio que queremos
+proteger *(.htaccess sirve para realizar configuración a nivel de directorio)*.
+El contenido del fichero será el siguiente:
+
+    AuthUserFile /home/fernan/.htpasswd
+    AuthName CarpetaSecreta
+    AuthType Basic
+
+    require user usuario1 usuario2 usuario3
+
+En la última línea, la sentencia `require user` permite especificar cuáles
+son los usuarios que tienen permitido el acceso. La primera línea contiene
+el directorio donde se encuentra el archivo con los usuarios y contraseñas
+*(es recomendable ponerlo fuera de la raíz del servidor)*. Ahora creamos el
+archivo *.htpasswd*, para ello usamos el el comando
+`htpasswd -cb <ruta-archivo> <nombre-usuario> <contraseña-usuario>`. Esto solo
+se debe realizar para el primer usuario, el resto deben añadirse sin la opción
+*c*. Por último, se debe cambiar en la configuración del directorio dentro
+de *httpd.conf* la opción `AllowOverride none` a `AllowOverride All`, de forma
+que pueda hacer efecto la configuración del archivo *.htaccess*.
+
+### Ej16
+Para controlar el rango de direcciones que acceden al servidor web, vamos a la
+parte de *httpd.conf* donde se configura el directorio raíz, y añadimos dentro
+de la directiva `<Diretctory>` asociada:
+
+  Allow from <ip-maquina>/24
+  Order Allow,Deny
+
+De esta forma esta restrigiendo el acceso a todas los clientes que no pertenezcan
+a la misma subred que el servidor. La directiva `Order` fija el orden en que
+se evalúan las directivas `Allow` y `Deny`.
+En el caso de que quisieramos restringir el acceso para todas las direcciones
+IP, basta con añadir la directiva `Deny from all`.
+
+Cuando se intente acceder a alguna dirección de nuestro servidor nos devolverá
+un error *Forbidden*. Hay que tener en cuenta que al restringir el acceso a
+la subred, ya no podemos acceder por medio de localhost, ya que es la IP
+`127.0.0.1` la cual no pertenece a la subred. Basta añadir locahost después,
+para que siga funcionando.
