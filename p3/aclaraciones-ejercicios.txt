@@ -14,7 +14,7 @@ IFS=$OLDIFS
 
 ##### ej3
 
-# wc -c devuelve longitud de cadena hacer un echo ordenar y quiatar nº con sed
+# wc -c devuelve longitud de cadena hacer un echo ordenar y quitar nº con sed
 
 # 3. ps aux 
 # sed falla capturando más de 10 elementos

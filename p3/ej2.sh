@@ -2,24 +2,7 @@
 OLDIFS=$IFS
 IFS=$'\n'
 
-if [ $# -eq 0 ]
-then
-	echo "Error de llamada. Usar el script $0 <fichero>"
-	exit 1
-fi
-
-if [ $# -neq 1 ]
-then
-	echo "Error de llamada. Usar el script $0 <fichero>"
-	exit 1
-fi
-
-if [ ! -f $1 ]
-then
-	echo "Error el argumento debe ser un fichero"
-fi
-
-archivo=$1
+archivo="series.txt"
 
 cat $archivo | sed '/^\s*$/d' | sed -r '/=+/d' \
 | sed -r 's/(^[0-9].+) \((.+)\)/\1\n\|-> Año de la serie: \2/' \
