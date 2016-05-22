@@ -1,0 +1,2 @@
+Para compilar Apache en otros sistemas GNU/Linux distintos a ts.uco.es, necesitaréis tener instalada la librería libpcre3-dev. Se puede instalar utilizando "Synaptic" o "apt-get".
+Última modificación: viernes, 19 de junio de 2015, 21:57
