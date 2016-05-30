@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Nombre del archivo donde se va a guardar el log del script
+archivo_log="ejercicio6.log"
+
+# Añade log del inicio del script
+echo "$(date +[%d-%m-%y]-%H:%M:%S) INICIO DEL SCRIPT" >> $archivo_log
+
 # Tiempo de inicio del script
 tiempo_inicio=$(date +%s.%3N)
 
@@ -86,6 +92,7 @@ do
     if ! [ -e $dir ]
     then
         mkdir $dir
+        echo "$(date +[%d-%m-%y]-%H:%M:%S) Creado directorio: $dir" >> $archivo_log
     fi
 done
 
@@ -108,6 +115,7 @@ do
     if [ $exito -eq 1 ]
     then
         (( exe_num++ ))
+        echo "$(date +[%d-%m-%y]-%H:%M:%S) Copiado archivo $archivo en $exe_dir" >> $archivo_log
     fi
 done
 
@@ -120,6 +128,7 @@ do
         if [ $exito -eq 1 ]
         then
             (( lib_num++ ))
+            echo "$(date +[%d-%m-%y]-%H:%M:%S) Copiado archivo $archivo en $lib_dir" >> $archivo_log
         fi
     fi
 done
@@ -128,15 +137,20 @@ for archivo in $(find $dirs \( -name '*.png' -o -name '*.gif' -o -name '*.jpg' \
 do
     pdf=$(echo $archivo | sed -r 's/(.*\.)(png|jpg|gif)/\1pdf/')
     convert $archivo $pdf
+    echo "$(date +[%d-%m-%y]-%H:%M:%S) Convertido $archivo a $pdf" >> $archivo_log
+    
     exito=$(mover_protegido $archivo $img_dir)
     if [ $exito -eq 1 ]
     then
         (( img_num++ ))
+        echo "$(date +[%d-%m-%y]-%H:%M:%S) Copiado archivo $archivo en $img_dir" >> $archivo_log
     fi
+    
     exito=$(mover_protegido $pdf $img_dir)
     if [ $exito -eq 1 ]
     then
         (( img_num++ ))
+        echo "$(date +[%d-%m-%y]-%H:%M:%S) Copiado archivo $pdf en $img_dir" >> $archivo_log
     fi
 
 done
@@ -147,6 +161,7 @@ do
     if [ $exito -eq 1 ]
     then
         (( h_num++ ))
+        echo "$(date +[%d-%m-%y]-%H:%M:%S) Copiado archivo $archivo en $h_dir" >> $archivo_log
     fi
 done
 
@@ -163,5 +178,8 @@ echo "Número de librerías: $lib_num"
 echo "Número de imágenes: $img_num"
 echo "Número de ficheros de cabecera: $h_num"
 echo "Tiempo necesario: $(echo "${tiempo_fin}-${tiempo_inicio}" | bc)"
+
+# Añade un log de la finalización del script
+echo "$(date +[%d-%m-%y]-%H:%M:%S) FIN DEL SCRIPT" >> $archivo_log
 
 
