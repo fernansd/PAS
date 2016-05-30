@@ -16,17 +16,11 @@ fi
 archivo=$1
 
 echo "<html>" > tarea.html
-titulo="1"
-for linea in $(cat $archivo)
-do
-    if [ $titulo ]
-    then
-        echo "<title>$linea</title>" >> tarea.html
-        echo "<body>" >> tarea.html
-        titulo=""
-    fi
-    echo "<p>$linea</p>" >> tarea.html
-done
+
+# Sustituye la primera ocurrencia de una línea que acabe en :
+cat $archivo | sed -r '0,/.*\:$/ s/(.*)\:$/\<title>\1<\/title>\n<body>/' \
+| sed -r '/^[^<].*$/,$ s/^(.*)$/<p>\1<\/p>/' >> tarea.html
+# A partir de la primera línea que acaba en : añade etiqueta <p>
 
 echo "</body>" >> tarea.html
 echo "</html>" >> tarea.html
